@@ -23,14 +23,20 @@ function App() {
           <Loader className="animate-spin text-red-600 size-20" />
         </div>
       </div>
-    )
+    );
   }
   return (
     <>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={!user ? <LoginPage /> : <Navigate to={"/"} />} />
-        <Route path="/signup" element={!user ? <SignUpPage /> : <Navigate to={"/"} />} />
+        <Route
+          path="/login"
+          element={!user ? <LoginPage /> : <Navigate to={"/"} />}
+        />
+        <Route
+          path="/signup"
+          element={!user ? <SignUpPage /> : <Navigate to={"/"} />}
+        />
       </Routes>
       <Footer />
       <Toaster />
