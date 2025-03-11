@@ -7,6 +7,7 @@ export const useAuthStore = create((set) => ({
   isSigningUp: false,
   isCheckingAuth: true,
   isLoggingOut: false,
+  isLoggingIn: false,
 
   signup: async (credentials) => {
     set({ isSigningUp: true });
@@ -15,12 +16,21 @@ export const useAuthStore = create((set) => ({
       set({ user: response.data.user });
       toast.success("Account created successfully");
     } catch (error) {
-      toast.error(error.response.data.message || "An error occurred");
+      toast.error(error.response.data.message || "Signup failed");
       set({ isSigningUp: false, user: null });
     }
   },
 
-  login: async () => {},
+  login: async (credentials) => {
+    set({ isLoggingIn: true });
+    try {
+      const response =  await axios.post("api/v1/auth/login", credentials);
+      set({user: response.data.user, isLoggingIn: false});
+    } catch (error) {
+      set({ isLoggingIn: false, user: null});
+      toast.error(error.response.data.message || "Login failed");
+    }
+  },
 
   logout: async () => {
     set({ isLoggingOut: true });
@@ -39,9 +49,10 @@ export const useAuthStore = create((set) => ({
     try {
       const response = await axios.get("/api/v1/auth/authcheck");
       set({ user: response.data.user, isCheckingAuth: false });
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       set({ isCheckingAuth: false, user: null });
-      toast.error(error.response.data.message || "An error occurred");
+      //toast.error(error.response.data.message || "An error occurred");
     }
   },
 }));
