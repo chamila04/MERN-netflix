@@ -4,6 +4,8 @@ import Navbar from "../../components/Navbar";
 import { Search } from "lucide-react";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { Link } from "react-router-dom";
+import { ORIGINAL_IMG_BASE_URL } from "../../utils/constants";
 
 const SearchPage = () => {
   const [activeTab, setActiveTab] = useState("movie");
@@ -21,16 +23,18 @@ const SearchPage = () => {
   const handleSearch = async (e) => {
     e.preventDefault();
     try {
-        const res = await axios.get(`/api/v1/search/${activeTab}/${searchTerm}`)
-        setResults(res.data.constant)
+      const res = await axios.get(`/api/v1/search/${activeTab}/${searchTerm}`);
+      setResults(res.data.content);
     } catch (error) {
-        if(error.response.status === 404) {
-            toast.error("Nothing found, make sure you are searching under the right category")
-        } else {
-            toast.error("An error occurred, please try again later")
-        }
+      if (error.response.status === 404) {
+        toast.error(
+          "Nothing found, make sure you are searching under the right category"
+        );
+      } else {
+        toast.error("An error occurred, please try again later");
+      }
     }
-  }
+  };
 
   return (
     <div className="bg-black min-h-screen text-white">
@@ -63,7 +67,10 @@ const SearchPage = () => {
           </button>
         </div>
 
-        <form className="flex gap-2 items-stretch mb-8 max-w-2xl mx-auto" onSubmit={handleSearch}>
+        <form
+          className="flex gap-2 items-stretch mb-8 max-w-2xl mx-auto"
+          onSubmit={handleSearch}
+        >
           <input
             type="text"
             value={searchTerm}
@@ -75,6 +82,41 @@ const SearchPage = () => {
             <Search className="size-6" />
           </button>
         </form>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {results.map((results) => {
+            if (!results?.poster_path && !results?.profile_path) return null;
+
+            return (
+              <div key={results.id} className="bg-gray-800 p-4 rounded">
+                {activeTab === "person" ? (
+                  <div
+                    to={"/actor/" + results?.name}
+                    className="flex flex-col items-center"
+                  >
+                    <img
+                      src={ORIGINAL_IMG_BASE_URL + results?.profile_path}
+                      alt={results?.name}
+                      className="max-h-96 rounded mx-auto"
+                    />
+                    <h2 className="mt-2 text-xl font-bold">{results?.name}</h2>
+                  </div>
+                ) : (
+                  <Link to={"/watch/" + results.id}>
+                    <img
+                      src={ORIGINAL_IMG_BASE_URL + results.poster_path}
+                      alt={results?.title || results?.name}
+                      className="w-full h-auto rounded"
+                    />
+                    <h2 className="mt-2 text-xl font-bold">
+                      {results?.title || results?.name}
+                    </h2>
+                  </Link>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
