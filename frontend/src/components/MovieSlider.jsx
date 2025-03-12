@@ -20,8 +20,8 @@ const MovieSlider = ({ category }) => {
   useEffect(() => {
     const getContent = async () => {
       const res = await axios.get(`/api/v1/${contentType}/${category}`);
-      console.log("content:", res.content);
-      console.log("data:", res.data);
+      //console.log("content:", res.content);
+      //console.log("data:", res.data);
       setContent(contentType === "tv" ? res.data.tvs : res.data.movies);
     };
 
